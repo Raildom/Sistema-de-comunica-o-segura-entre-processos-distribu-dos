@@ -21,17 +21,17 @@ from colorama import init, Fore, Style
 # Inicializar colorama para cores no terminal
 init(autoreset=True)
 
-# ──────────────────────────────────────────────────────────────────────────────
+# 
 # Configuração
-# ──────────────────────────────────────────────────────────────────────────────
+# 
 
 SERVIDOR_HOST = "localhost"
 SERVIDOR_PORT = 5000
 
 
-# ──────────────────────────────────────────────────────────────────────────────
+# 
 # Comunicação TCP
-# ──────────────────────────────────────────────────────────────────────────────
+# 
 
 def enviar_comando(host: str, port: int, comando: dict) -> dict:
     """
@@ -90,9 +90,9 @@ class ClienteSeguro:
         """Envia um comando ao servidor e retorna a resposta."""
         return enviar_comando(self.host, self.port, comando)
 
-    # ──────────────────────────────────────────────────────────────────────
+    # 
     # Autenticação
-    # ──────────────────────────────────────────────────────────────────────
+    # 
 
     def login(self, username: str, senha: str) -> bool:
         """Realiza login no servidor e obtém o token de sessão."""
@@ -117,7 +117,7 @@ class ClienteSeguro:
     def logout(self) -> bool:
         """Encerra a sessão no servidor."""
         if not self.token:
-            print(f"{Fore.YELLOW}⚠ Nenhuma sessão ativa.{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW} Nenhuma sessão ativa.{Style.RESET_ALL}")
             return False
 
         resp = self._cmd({"acao": "logout", "token": self.token})
@@ -144,9 +144,9 @@ class ClienteSeguro:
         else:
             print(f"{Fore.RED}Erro ao obter chave Fernet.{Style.RESET_ALL}")
 
-    # ──────────────────────────────────────────────────────────────────────
+    # 
     # Mensagens
-    # ──────────────────────────────────────────────────────────────────────
+    # 
 
     def enviar_mensagem(self, destinatario: str, conteudo: str) -> bool:
         """
@@ -154,14 +154,14 @@ class ClienteSeguro:
         A mensagem é criptografada localmente com Fernet antes do envio.
         """
         if not self.token or not self.fernet:
-            print(f"{Fore.YELLOW}⚠ Faça login primeiro.{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW} Faça login primeiro.{Style.RESET_ALL}")
             return False
 
         # Criptografar a mensagem antes de enviar
         conteudo_cifrado = self.fernet.encrypt(conteudo.encode()).decode()
 
-        print(f"\n{Fore.CYAN}🔒 Mensagem original: \"{conteudo}\"")
-        print(f"{Fore.MAGENTA}🔐 Mensagem cifrada: {conteudo_cifrado[:60]}...{Style.RESET_ALL}")
+        print(f"\n{Fore.CYAN} Mensagem original: \"{conteudo}\"")
+        print(f"{Fore.MAGENTA} Mensagem cifrada: {conteudo_cifrado[:60]}...{Style.RESET_ALL}")
 
         resp = self._cmd({
             "acao": "enviar",
@@ -185,7 +185,7 @@ class ClienteSeguro:
         O servidor descriptografa as mensagens antes da entrega.
         """
         if not self.token:
-            print(f"{Fore.YELLOW}⚠ Faça login primeiro.{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW} Faça login primeiro.{Style.RESET_ALL}")
             return []
 
         resp = self._cmd({"acao": "receber", "token": self.token})
@@ -194,14 +194,14 @@ class ClienteSeguro:
             mensagens = resp["mensagens"]
 
             if not mensagens:
-                print(f"\n{Fore.YELLOW}📭 Nenhuma mensagem encontrada.{Style.RESET_ALL}")
+                print(f"\n{Fore.YELLOW} Nenhuma mensagem encontrada.{Style.RESET_ALL}")
                 return []
 
-            print(f"\n{Fore.GREEN}📬 {resp['total']} mensagem(ns) encontrada(s):{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}{'─' * 50}{Style.RESET_ALL}")
+            print(f"\n{Fore.GREEN} {resp['total']} mensagem(ns) encontrada(s):{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{'' * 50}{Style.RESET_ALL}")
 
             for msg in mensagens:
-                status = "📖" if msg["lida"] else "📩"
+                status = "" if msg["lida"] else ""
                 print(f"\n  {status} ID: {msg['id']}")
                 print(f"     De: {Fore.CYAN}{msg['remetente']}{Style.RESET_ALL}")
                 print(f"     Para: {Fore.CYAN}{msg['destinatario']}{Style.RESET_ALL}")
@@ -209,7 +209,7 @@ class ClienteSeguro:
                 print(f"     Data: {msg['timestamp']}")
                 print(f"     Lida: {'Sim' if msg['lida'] else 'Não'}")
 
-            print(f"\n{Fore.CYAN}{'─' * 50}{Style.RESET_ALL}")
+            print(f"\n{Fore.CYAN}{'' * 50}{Style.RESET_ALL}")
             return mensagens
         else:
             erro = resp.get("erro", "Erro desconhecido")
@@ -222,10 +222,10 @@ class ClienteSeguro:
         Apenas admin tem permissão.
         """
         if not self.token:
-            print(f"{Fore.YELLOW}⚠ Faça login primeiro.{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW} Faça login primeiro.{Style.RESET_ALL}")
             return []
 
-        print(f"\n{Fore.YELLOW}🔍 Tentando ler mensagens de '{username_alvo}'...{Style.RESET_ALL}")
+        print(f"\n{Fore.YELLOW} Tentando ler mensagens de '{username_alvo}'...{Style.RESET_ALL}")
 
         # Tenta acessar o endpoint de todas as mensagens
         resp = self._cmd({"acao": "todas", "token": self.token})
@@ -235,12 +235,12 @@ class ClienteSeguro:
             mensagens = [m for m in resp["mensagens"] if m["destinatario"] == username_alvo]
 
             if not mensagens:
-                print(f"{Fore.YELLOW}📭 Nenhuma mensagem encontrada para '{username_alvo}'.{Style.RESET_ALL}")
+                print(f"{Fore.YELLOW} Nenhuma mensagem encontrada para '{username_alvo}'.{Style.RESET_ALL}")
                 return []
 
-            print(f"{Fore.GREEN}📬 {len(mensagens)} mensagem(ns) de '{username_alvo}':{Style.RESET_ALL}")
+            print(f"{Fore.GREEN} {len(mensagens)} mensagem(ns) de '{username_alvo}':{Style.RESET_ALL}")
             for msg in mensagens:
-                print(f"\n  📩 ID: {msg['id']}")
+                print(f"\n   ID: {msg['id']}")
                 print(f"     De: {msg['remetente']}")
                 print(f"     Conteúdo: {Fore.GREEN}{msg['conteudo']}{Style.RESET_ALL}")
                 print(f"     Data: {msg['timestamp']}")
@@ -251,14 +251,14 @@ class ClienteSeguro:
             print(f"{Fore.RED}  Usuários comuns só podem ler suas próprias mensagens.{Style.RESET_ALL}")
             return []
 
-    # ──────────────────────────────────────────────────────────────────────
+    # 
     # Administração
-    # ──────────────────────────────────────────────────────────────────────
+    # 
 
     def cadastrar_usuario(self, username: str, senha: str, papel: str = "user") -> bool:
         """[ADMIN] Cadastra um novo usuário no sistema."""
         if not self.token:
-            print(f"{Fore.YELLOW}⚠ Faça login primeiro.{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW} Faça login primeiro.{Style.RESET_ALL}")
             return False
 
         resp = self._cmd({
@@ -280,18 +280,18 @@ class ClienteSeguro:
     def listar_usuarios(self) -> list:
         """[ADMIN] Lista todos os usuários do sistema."""
         if not self.token:
-            print(f"{Fore.YELLOW}⚠ Faça login primeiro.{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW} Faça login primeiro.{Style.RESET_ALL}")
             return []
 
         resp = self._cmd({"acao": "usuarios", "token": self.token})
 
         if resp.get("status") == "ok":
-            print(f"\n{Fore.GREEN}👥 {resp['total']} usuário(s) cadastrado(s):{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}{'─' * 40}{Style.RESET_ALL}")
+            print(f"\n{Fore.GREEN} {resp['total']} usuário(s) cadastrado(s):{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{'' * 40}{Style.RESET_ALL}")
             for u in resp["usuarios"]:
-                icone = "👑" if u["papel"] == "admin" else "👤"
+                icone = "" if u["papel"] == "admin" else ""
                 print(f"  {icone} {u['username']} ({u['papel']})")
-            print(f"{Fore.CYAN}{'─' * 40}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{'' * 40}{Style.RESET_ALL}")
             return resp["usuarios"]
         else:
             erro = resp.get("erro", "Erro desconhecido")
@@ -301,7 +301,7 @@ class ClienteSeguro:
     def listar_todas_mensagens(self) -> list:
         """[ADMIN] Lista todas as mensagens do sistema."""
         if not self.token:
-            print(f"{Fore.YELLOW}⚠ Faça login primeiro.{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW} Faça login primeiro.{Style.RESET_ALL}")
             return []
 
         resp = self._cmd({"acao": "todas", "token": self.token})
@@ -310,18 +310,18 @@ class ClienteSeguro:
             mensagens = resp["mensagens"]
 
             if not mensagens:
-                print(f"\n{Fore.YELLOW}📭 Nenhuma mensagem no sistema.{Style.RESET_ALL}")
+                print(f"\n{Fore.YELLOW} Nenhuma mensagem no sistema.{Style.RESET_ALL}")
                 return []
 
-            print(f"\n{Fore.GREEN}📬 [ADMIN] {resp['total']} mensagem(ns) no sistema:{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}{'─' * 50}{Style.RESET_ALL}")
+            print(f"\n{Fore.GREEN} [ADMIN] {resp['total']} mensagem(ns) no sistema:{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{'' * 50}{Style.RESET_ALL}")
             for msg in mensagens:
-                print(f"\n  📩 ID: {msg['id']}")
-                print(f"     De: {Fore.CYAN}{msg['remetente']}{Style.RESET_ALL} → Para: {Fore.CYAN}{msg['destinatario']}{Style.RESET_ALL}")
+                print(f"\n   ID: {msg['id']}")
+                print(f"     De: {Fore.CYAN}{msg['remetente']}{Style.RESET_ALL}  Para: {Fore.CYAN}{msg['destinatario']}{Style.RESET_ALL}")
                 print(f"     Conteúdo: {Fore.GREEN}{msg['conteudo']}{Style.RESET_ALL}")
                 print(f"     Data: {msg['timestamp']}")
                 print(f"     Lida: {'Sim' if msg['lida'] else 'Não'}")
-            print(f"\n{Fore.CYAN}{'─' * 50}{Style.RESET_ALL}")
+            print(f"\n{Fore.CYAN}{'' * 50}{Style.RESET_ALL}")
             return mensagens
         else:
             erro = resp.get("erro", "Erro desconhecido")
@@ -331,21 +331,21 @@ class ClienteSeguro:
     def visualizar_banco(self):
         """[ADMIN/DEBUG] Mostra o conteúdo bruto do banco (mensagens cifradas)."""
         if not self.token:
-            print(f"{Fore.YELLOW}⚠ Faça login primeiro.{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW} Faça login primeiro.{Style.RESET_ALL}")
             return
 
         resp = self._cmd({"acao": "banco", "token": self.token})
 
         if resp.get("status") == "ok":
-            print(f"\n{Fore.MAGENTA}{'═' * 60}")
+            print(f"\n{Fore.MAGENTA}{'' * 60}")
             print(f"  CONTEÚDO BRUTO DO BANCO DE DADOS SQLite")
-            print(f"{'═' * 60}{Style.RESET_ALL}")
+            print(f"{'' * 60}{Style.RESET_ALL}")
 
-            print(f"\n{Fore.CYAN}── Tabela: usuarios ──{Style.RESET_ALL}")
+            print(f"\n{Fore.CYAN} Tabela: usuarios {Style.RESET_ALL}")
             for u in resp["usuarios"]:
                 print(f"  ID: {u['id']} | Username: {u['username']} | Papel: {u['papel']}")
 
-            print(f"\n{Fore.CYAN}── Tabela: mensagens (CIFRADAS) ──{Style.RESET_ALL}")
+            print(f"\n{Fore.CYAN} Tabela: mensagens (CIFRADAS) {Style.RESET_ALL}")
             for msg in resp["mensagens_cifradas"]:
                 print(f"\n  ID: {msg['id']}")
                 print(f"  Remetente: {msg['remetente']}")
@@ -354,24 +354,24 @@ class ClienteSeguro:
                 print(f"  Timestamp: {msg['timestamp']}")
                 print(f"  Lida: {msg['lida']}")
 
-            print(f"\n{Fore.MAGENTA}{'═' * 60}{Style.RESET_ALL}")
+            print(f"\n{Fore.MAGENTA}{'' * 60}{Style.RESET_ALL}")
         else:
             erro = resp.get("erro", "Erro desconhecido")
             print(f"\n{Fore.RED}{erro}{Style.RESET_ALL}")
 
 
-# ──────────────────────────────────────────────────────────────────────────────
+# 
 # Menu Interativo
-# ──────────────────────────────────────────────────────────────────────────────
+# 
 
 def exibir_menu(cliente: ClienteSeguro):
     """Exibe o menu de opções do cliente."""
-    print(f"\n{Fore.CYAN}{'═' * 50}")
+    print(f"\n{Fore.CYAN}{'' * 50}")
     print(f"  SISTEMA DE COMUNICAÇÃO SEGURA (Socket TCP)")
     if cliente.username:
         papel_str = f" [{cliente.papel.upper()}]" if cliente.papel else ""
         print(f"  Logado como: {Fore.GREEN}{cliente.username}{papel_str}{Style.RESET_ALL}")
-    print(f"{Fore.CYAN}{'═' * 50}{Style.RESET_ALL}")
+    print(f"{Fore.CYAN}{'' * 50}{Style.RESET_ALL}")
 
     if not cliente.token:
         print(f"  {Fore.WHITE}1. Login{Style.RESET_ALL}")
@@ -388,7 +388,7 @@ def exibir_menu(cliente: ClienteSeguro):
         print(f"  {Fore.WHITE}8. Logout{Style.RESET_ALL}")
         print(f"  {Fore.WHITE}0. Sair{Style.RESET_ALL}")
 
-    print(f"{Fore.CYAN}{'─' * 50}{Style.RESET_ALL}")
+    print(f"{Fore.CYAN}{'' * 50}{Style.RESET_ALL}")
 
 
 def main():
@@ -405,10 +405,10 @@ def main():
 
     cliente = ClienteSeguro(host, port)
 
-    print(f"\n{Fore.CYAN}{'═' * 50}")
+    print(f"\n{Fore.CYAN}{'' * 50}")
     print(f"  CLIENTE DE COMUNICAÇÃO SEGURA (Socket TCP)")
     print(f"  Servidor: {host}:{port}")
-    print(f"{'═' * 50}{Style.RESET_ALL}")
+    print(f"{'' * 50}{Style.RESET_ALL}")
 
     while True:
         exibir_menu(cliente)
