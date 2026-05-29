@@ -25,7 +25,7 @@ init(autoreset=True)
 # Configuração
 # 
 
-SERVIDOR_HOST = "localhost"
+SERVIDOR_IP = "localhost"
 SERVIDOR_PORT = 5000
 
 
@@ -103,8 +103,6 @@ class ClienteSeguro:
             self.username = username
             self.papel = resp["papel"]
             print(f"\n{Fore.GREEN}{resp['mensagem']}")
-            print(f"{Fore.CYAN}  Papel: {self.papel}")
-            print(f"{Fore.CYAN}  Token: {self.token[:16]}...{Style.RESET_ALL}")
 
             # Obter chave Fernet do servidor
             self._obter_chave()
@@ -140,7 +138,6 @@ class ClienteSeguro:
         if resp.get("status") == "ok":
             chave = resp["chave"]
             self.fernet = Fernet(chave.encode())
-            print(f"{Fore.CYAN}  Chave Fernet obtida com sucesso.{Style.RESET_ALL}")
         else:
             print(f"{Fore.RED}Erro ao obter chave Fernet.{Style.RESET_ALL}")
 
@@ -160,9 +157,6 @@ class ClienteSeguro:
         # Criptografar a mensagem antes de enviar
         conteudo_cifrado = self.fernet.encrypt(conteudo.encode()).decode()
 
-        print(f"\n{Fore.CYAN} Mensagem original: \"{conteudo}\"")
-        print(f"{Fore.MAGENTA} Mensagem cifrada: {conteudo_cifrado[:60]}...{Style.RESET_ALL}")
-
         resp = self._cmd({
             "acao": "enviar",
             "token": self.token,
@@ -172,7 +166,6 @@ class ClienteSeguro:
 
         if resp.get("status") == "ok":
             print(f"{Fore.GREEN}{resp['mensagem']}")
-            print(f"{Fore.CYAN}  Timestamp: {resp['timestamp']}{Style.RESET_ALL}")
             return True
         else:
             erro = resp.get("erro", "Erro desconhecido")
@@ -227,8 +220,8 @@ class ClienteSeguro:
 
         print(f"\n{Fore.YELLOW} Tentando ler mensagens de '{username_alvo}'...{Style.RESET_ALL}")
 
-        # Tenta acessar o endpoint de todas as mensagens
-        resp = self._cmd({"acao": "todas", "token": self.token})
+        # Tenta acessar o endpoint de todas as mensagens passando o alvo
+        resp = self._cmd({"acao": "todas", "token": self.token, "alvo": username_alvo})
 
         if resp.get("status") == "ok":
             # Admin - filtra mensagens do alvo
@@ -367,7 +360,6 @@ class ClienteSeguro:
 def exibir_menu(cliente: ClienteSeguro):
     """Exibe o menu de opções do cliente."""
     print(f"\n{Fore.CYAN}{'' * 50}")
-    print(f"  SISTEMA DE COMUNICAÇÃO SEGURA (Socket TCP)")
     if cliente.username:
         papel_str = f" [{cliente.papel.upper()}]" if cliente.papel else ""
         print(f"  Logado como: {Fore.GREEN}{cliente.username}{papel_str}{Style.RESET_ALL}")
@@ -381,10 +373,10 @@ def exibir_menu(cliente: ClienteSeguro):
         print(f"  {Fore.WHITE}2. Ler minhas mensagens{Style.RESET_ALL}")
         print(f"  {Fore.WHITE}3. Tentar ler mensagens de outro usuário{Style.RESET_ALL}")
         if cliente.papel == "admin":
-            print(f"  {Fore.YELLOW}4. [ADMIN] Listar todas as mensagens{Style.RESET_ALL}")
-            print(f"  {Fore.YELLOW}5. [ADMIN] Cadastrar novo usuário{Style.RESET_ALL}")
-            print(f"  {Fore.YELLOW}6. [ADMIN] Listar usuários{Style.RESET_ALL}")
-            print(f"  {Fore.YELLOW}7. [ADMIN] Ver banco de dados (cifrado){Style.RESET_ALL}")
+            print(f"  4. Listar todas as mensagens{Style.RESET_ALL}")
+            print(f"  5. Cadastrar novo usuário{Style.RESET_ALL}")
+            print(f"  6. Listar usuários{Style.RESET_ALL}")
+            print(f"  7. Ver banco de dados (cifrado){Style.RESET_ALL}")
         print(f"  {Fore.WHITE}8. Logout{Style.RESET_ALL}")
         print(f"  {Fore.WHITE}0. Sair{Style.RESET_ALL}")
 
