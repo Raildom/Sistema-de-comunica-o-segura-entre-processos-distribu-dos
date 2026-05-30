@@ -29,7 +29,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "mensagens.db")
 KEY_PATH = os.path.join(BASE_DIR, "chave.key")
 
-HOST = "0.0.0.0"
+HOST = "10.199.91.106"
 PORT = 5000
 
 # Tokens de sessão ativos: {token: username}
