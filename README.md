@@ -13,7 +13,7 @@ O sistema é composto por três componentes que rodam em processos separados:
 | **Cliente B (Destinatário)** | Python (Socket TCP / `socket`) | Faz login e busca suas mensagens (descriptografadas pelo servidor) |
 
 ### Protocolo de Comunicação
-
+      
 A comunicação é feita via modelo **Request/Response** usando **JSON delimitado por newline (`\n`)** através de sockets TCP puros.
 
 Exemplo de Requisição:
@@ -41,7 +41,7 @@ Exemplo de Resposta:
 
 3. **Controle de Acesso por Papéis**
 
-   | Ação | Papel: user | Papel: admin |
+   | Ação | Papel: user | Papel: admin |    
    |---|---|---|
    | Enviar mensagem | ✅ | ✅ |
    | Ler suas próprias mensagens | ✅ | ✅ |
@@ -110,7 +110,7 @@ python client/cliente.py IP-DO-SERVIDOR:5000
 ### 3. Executar a Demonstração Automática
 
 Para rodar o fluxo completo de apresentação automaticamente:
-```bash
+```bash     
 # Terminal 1: servidor
 python server/app.py
 
@@ -138,7 +138,7 @@ Servidor online: Servidor de comunicação segura está ativo.
 
 
 ════════════════════════════════════════════════════════════
-  PASSO 2: Tentativa de login com senha ERRADA → acesso negado
+  PASSO 2: Tentativa de login com senha ERRADA → acesso negado     
 ════════════════════════════════════════════════════════════
 
 Falha no login: Credenciais inválidas. Acesso negado.
@@ -154,7 +154,7 @@ Login bem-sucedido. Bem-vindo, alice!
   Papel: user
   Token: 2b595be88c79c0f6...
   Chave Fernet obtida com sucesso.
-
+   
 → Token de sessão gerado com sucesso!
 
 
