@@ -25,7 +25,7 @@ init(autoreset=True)
 # Configuração
 # 
 
-SERVIDOR_IP = "localhost"
+SERVIDOR_IP = "10.252.164.106"
 SERVIDOR_PORT = 5000
 
 
