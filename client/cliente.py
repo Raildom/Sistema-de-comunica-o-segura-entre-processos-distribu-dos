@@ -25,7 +25,7 @@ init(autoreset=True)
 # Configuração
 # 
 
-SERVIDOR_IP = "10.199.91.32"
+SERVIDOR_IP = "10.199.91.106"
 SERVIDOR_PORT = 5000
 
 
