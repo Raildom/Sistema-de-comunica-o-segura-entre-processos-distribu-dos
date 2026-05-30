@@ -78,7 +78,7 @@ def enviar_comando(host: str, port: int, comando: dict) -> dict:
 class ClienteSeguro:
     """Cliente para comunicação segura com o servidor central via socket TCP."""
 
-    def __init__(self, host: str = SERVIDOR_HOST, port: int = SERVIDOR_PORT):
+    def __init__(self, host: str = SERVIDOR_IP, port: int = SERVIDOR_PORT):
         self.host = host
         self.port = port
         self.token: str | None = None
@@ -385,7 +385,7 @@ def exibir_menu(cliente: ClienteSeguro):
 
 def main():
     """Função principal - menu interativo do cliente."""
-    host = SERVIDOR_HOST
+    host = SERVIDOR_IP
     port = SERVIDOR_PORT
 
     # Permitir especificar host:port como argumento
